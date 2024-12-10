@@ -1,1 +1,119 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reimagine Truth</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+</head>
+<body class="bg-black text-white">
+    <div class="flex flex-col md:flex-row">
+        <div class="flex-1">
+            <header class="bg-black text-white p-4 flex justify-between items-center relative shadow-md">
+                <div class="flex flex-col items-center w-full">
+                    <img alt="A sharply dressed, intense-looking male character with a dark suit and piercing eyes" class="w-24 mb-2 fade-in rounded-full shadow-lg transform hover:scale-105 transition-transform" height="50" src="https://i.ibb.co/p30Q5fs/Leonardo-Kino-XL-A-sharplydressed-intenselooking-male-characte-3.jpg" width="100"/>
+                    <h1 class="text-2xl font-bold text-center fade-in" id="header-title">Welcome to Reimagine Truth</h1>
+                    <p class="text-lg text-center fade-in">Explore the unique stories of our NFT characters.</p>
+                </div>
+            </header>
+            <main class="p-4">
+                <div class="flex justify-center mb-6">
+                    <input type="text" id="search-bar" placeholder="Search your NFT serial number #" class="w-full max-w-md p-2 rounded bg-[#202327] text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500" aria-label="Search your NFT serial number">
+                    <select class="ml-2 p-2 rounded bg-[#202327] text-white focus:outline-none focus:ring-2 focus:ring-blue-500" id="rarity-filter">
+                        <option value="">All Rarities</option>
+                        <option value="Common">Common</option>
+                        <option value="Rare">Rare</option>
+                        <option value="Ultra Rare">Ultra Rare</option>
+                    </select>
+                    <button class="ml-2 p-2 bg-[#d7dbdc] text-black rounded hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500" onclick="searchNFT()">Search</button>
+                </div>
+                <div class="flex justify-center mb-6" id="view-all-container" style="display: none;">
+                    <button class="p-2 bg-[#d7dbdc] text-black rounded hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500" onclick="showAllNFTs()">View All</button>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 p-6" id="nft-grid" style="display: none;">
+                    <!-- No cards here -->
+                </div>
+                <div class="text-center mt-4" id="no-results" style="display: none;">
+                    <p class="text-red-500">No results found. Please try a different serial number.</p>
+                </div>
 
+                <!-- News Section -->
+                <section id="news-section" class="p-4 bg-black text-white rounded mb-6 fade-in">
+                    <h2 class="text-2xl font-bold mb-4"><i class="fas fa-newspaper mr-2"></i>Latest News</h2>
+                    <p class="text-lg">Stay tuned for the latest updates and announcements.</p>
+                    <a href="news.html" class="p-2 bg-[#d7dbdc] text-black rounded hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500 inline-block mt-4">Read More</a>
+                </section>
+            </main>
+        </div>
+    </div>
+    <audio id="click-sound" src="https://www.soundjay.com/button/sounds/button-16.mp3" preload="auto"></audio>
+    <script>
+        function searchNFT() {
+            const searchValue = document.getElementById('search-bar').value.trim();
+            const rarityFilter = document.getElementById('rarity-filter').value;
+            const nftCards = document.querySelectorAll('.nft-card');
+            let found = false;
+
+            nftCards.forEach(card => {
+                const serialMatch = card.getAttribute('data-serial') === searchValue || searchValue === '';
+                const rarityMatch = card.querySelector('p').textContent.includes(rarityFilter) || rarityFilter === '';
+
+                if (serialMatch && rarityMatch) {
+                    card.style.display = 'block';
+                    found = true;
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+
+            if (found) {
+                document.getElementById('view-all-container').style.display = 'flex';
+                document.getElementById('no-results').style.display = 'none';
+                document.getElementById('nft-grid').style.display = 'grid';
+            } else {
+                document.getElementById('view-all-container').style.display = 'none';
+                document.getElementById('no-results').style.display = 'block';
+                document.getElementById('nft-grid').style.display = 'none';
+            }
+            playClickSound();
+        }
+
+        function showAllNFTs() {
+            const nftCards = document.querySelectorAll('.nft-card');
+            nftCards.forEach(card => {
+                card.style.display = 'block';
+            });
+            document.getElementById('view-all-container').style.display = 'none';
+            document.getElementById('no-results').style.display = 'none';
+            document.getElementById('nft-grid').style.display = 'grid';
+            playClickSound();
+        }
+
+        function playClickSound() {
+            const clickSound = document.getElementById('click-sound');
+            clickSound.play();
+        }
+
+        document.querySelectorAll('button').forEach(button => {
+            button.addEventListener('click', () => {
+                button.classList.add('button-click');
+                setTimeout(() => {
+                    button.classList.remove('button-click');
+                }, 200);
+            });
+        });
+
+        const themeToggle = document.getElementById('theme-toggle');
+        themeToggle.addEventListener('click', () => {
+            document.body.classList.toggle('bg-black');
+            document.body.classList.toggle('bg-white');
+            document.body.classList.toggle('text-white');
+            document.body.classList.toggle('text-black');
+            document.body.classList.toggle('light-mode');
+            themeToggle.innerHTML = document.body.classList.contains('light-mode') ? '<i class="fas fa-moon"></i>' : '<i class="fas fa-sun"></i>';
+            document.getElementById('header-title').classList.toggle('text-white');
+            document.getElementById('header-title').classList.toggle('text-black');
+        });
+    </script>
+</body>
+</html>
