@@ -48,44 +48,72 @@
     </div>
     <audio id="click-sound" src="https://www.soundjay.com/button/sounds/button-16.mp3" preload="auto"></audio>
     <script>
-        function searchNFT() {
+        async function fetchNFTData() {
+            const response = await fetch('/assets/nft-cards.json');
+            const data = await response.json();
+            return data;
+        }
+
+        async function searchNFT() {
             const searchValue = document.getElementById('search-bar').value.trim();
             const rarityFilter = document.getElementById('rarity-filter').value;
-            const nftCards = document.querySelectorAll('.nft-card');
+            const nftData = await fetchNFTData();
+            const nftGrid = document.getElementById('nft-grid');
+            nftGrid.innerHTML = '';
             let found = false;
 
-            nftCards.forEach(card => {
-                const serialMatch = card.getAttribute('data-serial') === searchValue || searchValue === '';
-                const rarityMatch = card.querySelector('p').textContent.includes(rarityFilter) || rarityFilter === '';
+            nftData.forEach(nft => {
+                const serialMatch = nft.serial === searchValue || searchValue === '';
+                const rarityMatch = nft.rarity.includes(rarityFilter) || rarityFilter === '';
 
                 if (serialMatch && rarityMatch) {
-                    card.style.display = 'block';
+                    const nftCard = document.createElement('div');
+                    nftCard.className = 'border border-gray-700 p-4 bg-black nft-card slide-in transform hover:scale-105 transition-transform';
+                    nftCard.setAttribute('data-serial', nft.serial);
+                    nftCard.innerHTML = `
+                        <img alt="${nft.description}" class="w-full mb-2 rounded-lg shadow-md" src="${nft.image}">
+                        <h3 class="text-xl font-bold">${nft.name}</h3>
+                        <p>Rarity: ${nft.rarity}</p>
+                        <a href="#" class="text-blue-500">View Details</a>
+                    `;
+                    nftGrid.appendChild(nftCard);
                     found = true;
-                } else {
-                    card.style.display = 'none';
                 }
             });
 
             if (found) {
                 document.getElementById('view-all-container').style.display = 'flex';
                 document.getElementById('no-results').style.display = 'none';
-                document.getElementById('nft-grid').style.display = 'grid';
+                nftGrid.style.display = 'grid';
             } else {
                 document.getElementById('view-all-container').style.display = 'none';
                 document.getElementById('no-results').style.display = 'block';
-                document.getElementById('nft-grid').style.display = 'none';
+                nftGrid.style.display = 'none';
             }
             playClickSound();
         }
 
-        function showAllNFTs() {
-            const nftCards = document.querySelectorAll('.nft-card');
-            nftCards.forEach(card => {
-                card.style.display = 'block';
+        async function showAllNFTs() {
+            const nftData = await fetchNFTData();
+            const nftGrid = document.getElementById('nft-grid');
+            nftGrid.innerHTML = '';
+
+            nftData.forEach(nft => {
+                const nftCard = document.createElement('div');
+                nftCard.className = 'border border-gray-700 p-4 bg-black nft-card slide-in transform hover:scale-105 transition-transform';
+                nftCard.setAttribute('data-serial', nft.serial);
+                nftCard.innerHTML = `
+                    <img alt="${nft.description}" class="w-full mb-2 rounded-lg shadow-md" src="${nft.image}">
+                    <h3 class="text-xl font-bold">${nft.name}</h3>
+                    <p>Rarity: ${nft.rarity}</p>
+                    <a href="#" class="text-blue-500">View Details</a>
+                `;
+                nftGrid.appendChild(nftCard);
             });
+
             document.getElementById('view-all-container').style.display = 'none';
             document.getElementById('no-results').style.display = 'none';
-            document.getElementById('nft-grid').style.display = 'grid';
+            nftGrid.style.display = 'grid';
             playClickSound();
         }
 
